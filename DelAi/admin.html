@@ -1,0 +1,167 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Del AI Admin</title><link rel="icon" href="logo.png"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--bg2:#12121a;--bg3:#1a1a2e;--bd:#2a2a3e;--tx:#f1f5f9;--tx2:#94a3b8;--tx3:#64748b;--p:#ff6b35;--ok:#10b981;--no:#ef4444;--pu:#8b5cf6}
+body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--tx)}
+.gate{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.gate-b{background:var(--bg2);border:1px solid var(--bd);border-radius:20px;padding:32px;max-width:380px;width:100%;text-align:center}
+.gate-b h1{font-size:24px;margin-bottom:4px}.gate-b h1 span{color:var(--p)}.gate-b p{color:var(--tx3);font-size:12px;margin-bottom:18px}
+.fi{width:100%;padding:12px;background:var(--bg3);border:1px solid var(--bd);border-radius:10px;color:var(--tx);font-size:14px;outline:none;margin-bottom:10px}
+.btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--p),#ff8c42);border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer}
+.adm{display:none}.adm.show{display:flex;min-height:100vh}
+.side{width:220px;background:var(--bg2);border-right:1px solid var(--bd);padding:14px;flex-shrink:0}
+.side h2{font-size:16px;margin-bottom:16px}.side h2 span{color:var(--p)}
+.si{display:flex;align-items:center;gap:8px;padding:10px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:3px}
+.si.active{background:rgba(255,107,53,.12);color:var(--p)}
+.main{flex:1;padding:18px;overflow-x:auto}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.kpi{background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:14px}.kpi .n{font-size:22px;font-weight:800;color:var(--p)}.kpi .l{font-size:11px;color:var(--tx3)}
+.card{background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:14px}
+.card h3{font-size:14px;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;color:var(--tx3);font-size:10px;text-transform:uppercase;padding:6px;border-bottom:1px solid var(--bd)}
+td{padding:8px 6px;border-bottom:1px solid var(--bd);vertical-align:top}
+.badge{padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700}.b-ok{background:rgba(16,185,129,.15);color:var(--ok)}.b-no{background:rgba(239,68,68,.15);color:var(--no)}.b-pr{background:rgba(255,107,53,.15);color:var(--p)}
+.act{padding:5px 9px;border-radius:7px;border:1px solid var(--bd);background:var(--bg3);color:var(--tx);font-size:10px;cursor:pointer;margin:1px}
+.act.dg{color:var(--no)}.act.ok{color:var(--ok)}
+.srow{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}.srow input,.srow select{margin:0;flex:1;min-width:140px}
+.frm{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.frm label{font-size:11px;color:var(--tx2)}
+.sw{display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12px}
+.sw input{width:18px;height:18px;accent-color:var(--p)}
+.chart{display:flex;align-items:flex-end;gap:6px;height:120px;margin-bottom:22px}.bar{flex:1;background:linear-gradient(180deg,var(--p),var(--pu));border-radius:5px 5px 0 0;min-height:3px;position:relative}.bar span{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:9px}.bar label{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--tx3)}
+.ts{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg3);border:1px solid var(--p);border-radius:10px;padding:10px 18px;font-size:12px;transition:transform .3s;z-index:999}.ts.show{transform:translateX(-50%) translateY(0)}
+.tp{display:none}.tp.active{display:block}
+@media(max-width:768px){.adm.show{flex-direction:column}.side{width:100%;display:flex;flex-wrap:wrap;gap:4px}.side h2{width:100%}.frm{grid-template-columns:1fr}}
+</style></head><body>
+
+<div class="gate" id="gate"><div class="gate-b"><h1>Del<span>AI</span> ⚙️</h1><p>Admin Panel</p>
+<input type="email" class="fi" id="ae" placeholder="Email admin"><input type="password" class="fi" id="ap" placeholder="Password admin">
+<button class="btn" onclick="aLogin()">🔓 Masuk</button></div></div>
+
+<div class="adm" id="adm"><div class="side"><h2>Del<span>AI</span> ⚙️</h2>
+<div class="si active" onclick="tab(this,'dash')">📊 Dashboard</div><div class="si" onclick="tab(this,'users')">👥 Users</div>
+<div class="si" onclick="tab(this,'videos')">🎬 Videos</div><div class="si" onclick="tab(this,'tx')">💰 Transaksi</div>
+<div class="si" onclick="tab(this,'tpl')">🎨 Templates</div><div class="si" onclick="tab(this,'models')">🤖 Models</div>
+<div class="si" onclick="tab(this,'ann')">📢 Pengumuman</div><div class="si" onclick="tab(this,'set')">⚙️ Settings</div>
+<div class="si" onclick="tab(this,'data')">💾 Data</div><div class="si" onclick="aLogout()" style="color:var(--no)">🚪 Keluar</div></div>
+<div class="main">
+
+<div class="tp active" id="tp-dash"><h2 style="margin-bottom:14px">📊 Dashboard</h2><div class="kpis" id="kpis"></div>
+<div class="card"><h3>📈 Video 7 Hari</h3><div class="chart" id="chart"></div></div><div class="kpis" id="kpis2"></div></div>
+
+<div class="tp" id="tp-users"><h2 style="margin-bottom:14px">👥 Users</h2>
+<div class="srow"><input class="fi" id="uSearch" placeholder="🔍 cari..." oninput="rUsers()"><button class="btn" style="width:auto;padding:10px 16px" onclick="addUser()">➕ Tambah</button></div>
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>Nama</th><th>Email</th><th>Kredit</th><th>Vid</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="uT"></tbody></table></div></div>
+
+<div class="tp" id="tp-videos"><h2 style="margin-bottom:14px">🎬 Videos</h2>
+<div class="srow"><input class="fi" id="vSearch" placeholder="🔍 prompt/user..." oninput="rVideos()"><select class="fi" id="vFilter" onchange="rVideos()" style="flex:0 0 140px"><option value="">Semua</option><option value="done">Done</option><option value="processing">Proses</option><option value="failed">Gagal</option></select></div>
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>Prompt</th><th>User</th><th>Set</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="vT"></tbody></table></div></div>
+
+<div class="tp" id="tp-tx"><h2 style="margin-bottom:14px">💰 Transaksi</h2>
+<div class="srow"><select class="fi" id="tFilter" onchange="rTx()" style="flex:0 0 160px"><option value="">Semua</option><option value="pending">Pending</option><option value="paid">Paid</option><option value="rejected">Ditolak</option></select></div>
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>User</th><th>Kredit</th><th>Nominal</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="tT"></tbody></table></div></div>
+
+<div class="tp" id="tp-tpl"><h2 style="margin-bottom:14px">🎨 Templates</h2>
+<div class="card"><h3>➕ Tambah</h3><div class="frm"><div><label>Nama</label><input class="fi" id="tName"></div><div><label>Desc</label><input class="fi" id="tDesc"></div>
+<div><label>Icon</label><input class="fi" id="tIcon"></div><div><label>Warna</label><input class="fi" id="tColor" placeholder="#a,#b"></div>
+<div style="grid-column:1/-1"><label>Prompt</label><textarea class="fi" id="tPrompt" rows="2"></textarea></div></div><button class="btn" onclick="addTpl()">Simpan</button></div>
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>Icon</th><th>Nama</th><th>Desc</th><th>Prompt</th><th>Aksi</th></tr></thead><tbody id="tplT"></tbody></table></div></div>
+
+<div class="tp" id="tp-models"><h2 style="margin-bottom:14px">🤖 Models</h2>
+<div class="srow"><input class="fi" id="mName" placeholder="Nama model"><button class="btn" style="width:auto;padding:10px 16px" onclick="addModel()">➕</button></div>
+<div class="card"><table><thead><tr><th>Model</th><th>Aksi</th></tr></thead><tbody id="mT"></tbody></table></div></div>
+
+<div class="tp" id="tp-ann"><h2 style="margin-bottom:14px">📢 Pengumuman</h2>
+<div class="card"><h3>➕ Buat</h3><div class="frm"><div><label>Judul</label><input class="fi" id="anT"></div><div><label>Status</label><select class="fi" id="anA"><option value="1">Aktif</option><option value="0">Off</option></select></div>
+<div style="grid-column:1/-1"><label>Isi</label><textarea class="fi" id="anB" rows="2"></textarea></div></div><button class="btn" onclick="addAnn()">Simpan</button></div>
+<div class="card"><table><thead><tr><th>Judul</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="anT2"></tbody></table></div></div>
+
+<div class="tp" id="tp-set"><h2 style="margin-bottom:14px">⚙️ Settings</h2>
+<div class="card"><h3>Umum</h3><div class="frm"><div><label>Biaya video</label><input class="fi" id="sCost" type="number"></div><div><label>Bonus baru</label><input class="fi" id="sBonus" type="number"></div></div>
+<div class="sw">🛠️ Maintenance<input type="checkbox" id="sMaint"></div><div class="sw">⚡ Auto-approve top up<input type="checkbox" id="sAuto"></div>
+<button class="btn" onclick="saveSet()">💾 Simpan</button></div>
+<div class="card"><h3>📦 Paket Top Up</h3><div class="srow"><input class="fi" id="pkCr" type="number" placeholder="Kredit"><input class="fi" id="pkPr" type="number" placeholder="Harga"><input class="fi" id="pkBo" type="number" placeholder="Bonus"><button class="btn" style="width:auto;padding:10px 14px" onclick="addPkg()">➕</button></div>
+<table><thead><tr><th>Kredit</th><th>Bonus</th><th>Harga</th><th>Aksi</th></tr></thead><tbody id="pkT"></tbody></table></div></div>
+
+<div class="tp" id="tp-data"><h2 style="margin-bottom:14px">💾 Data</h2>
+<div class="card"><h3>Backup</h3><button class="btn" style="margin-bottom:8px" onclick="exportAll()">⬇️ Export JSON</button>
+<label class="btn" style="display:inline-block;background:var(--pu)">⬆️ Import<input type="file" accept=".json" style="display:none" onchange="importAll(event)"></label></div>
+<div class="card"><h3>⚠️ Zona Berbahaya</h3><button class="btn" style="background:var(--no)" onclick="wipe()">🗑️ Reset Semua</button></div></div>
+
+</div></div>
+<div class="ts" id="toast"></div>
+
+<script>
+const SUPABASE_URL='https://unzntagnnfcuzrywlrnli.supabase.co';
+const SUPABASE_ANON='sb_publishable_nk1JOkAj5oRdJPBTeCLjNQ_sC8or49B';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+let token=null,S={};
+const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const toast=m=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600)};
+async function api(action,payload){const r=await fetch('/api/admin',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({action,...(payload||{})})});const j=await r.json();if(!r.ok)throw new Error(j.error||'error');return j;}
+async function aLogin(){const e=document.getElementById('ae').value.trim(),p=document.getElementById('ap').value;const{data,error}=await sb.auth.signInWithPassword({email:e,password:p});if(error)return toast('❌ '+error.message);
+const{data:u}=await sb.auth.getUser();const role=(u.user.app_metadata&&u.user.app_metadata.role)||(u.user.user_metadata&&u.user.user_metadata.role);if(role!=='admin')return toast('🚫 Bukan admin');
+token=data.session.access_token;await loadS();document.getElementById('gate').style.display='none';document.getElementById('adm').classList.add('show');renderAll();}
+function aLogout(){localStorage.removeItem('delai_adm');location.reload();}
+async function loadS(){try{const r=await api('get_settings');S=r.value||{};}catch(e){}}
+
+function tab(el,t){document.querySelectorAll('.si').forEach(x=>x.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.tp').forEach(x=>x.classList.remove('active'));document.getElementById('tp-'+t).classList.add('active');}
+async function renderAll(){await Promise.all([rDash(),rUsers(),rVideos(),rTx(),rTpl(),rModels(),rAnn(),rSet()]);}
+
+async function rDash(){const d=await api('stats');document.getElementById('kpis').innerHTML=
+'<div class="kpi"><div class="n">'+d.users+'</div><div class="l">👥 User</div></div><div class="kpi"><div class="n">'+d.videos+'</div><div class="l">🎬 Video</div></div>'+
+'<div class="kpi"><div class="n">'+d.processing+'</div><div class="l">⏳ Proses</div></div><div class="kpi"><div class="n">'+d.pending+'</div><div class="l">💰 Pending</div></div>';
+document.getElementById('kpis2').innerHTML='<div class="kpi"><div class="n" style="color:var(--ok)">Rp '+d.revenue.toLocaleString('id-ID')+'</div><div class="l">💵 Pendapatan</div></div><div class="kpi"><div class="n">'+d.creditsSold+'</div><div class="l">🪙 Terjual</div></div>';
+let ch='';for(let i=6;i>=0;i--){const day=new Date();day.setHours(0,0,0,0);day.setDate(day.getDate()-i);const c=d.daily[i];ch+='<div class="bar" style="height:'+Math.min(100,c*20)+'%"><span>'+c+'</span><label>'+day.toLocaleDateString('id-ID',{weekday:'short'})+'</label></div>';}document.getElementById('chart').innerHTML=ch;}
+
+let USERS=[];
+async function rUsers(){const d=await api('list_users');USERS=d;const q=(document.getElementById('uSearch').value||'').toLowerCase();
+document.getElementById('uT').innerHTML=d.filter(u=>(u.name+u.email).toLowerCase().includes(q)).map(u=>'<tr><td><b>'+esc(u.name)+'</b></td><td>'+esc(u.email)+'</td><td>'+u.credits+'</td><td>'+u.vcount+'</td><td><span class="badge '+(u.blocked?'b-no':'b-ok')+'">'+(u.blocked?'Blokir':'Aktif')+'</span></td>'+
+'<td><button class="act" onclick="editU(\''+u.id+'\')">✏️</button><button class="act ok" onclick="creditU(\''+u.id+'\')">🪙</button><button class="act" onclick="blockU(\''+u.id+'\')">'+(u.blocked?'🔓':'🚫')+'</button><button class="act dg" onclick="delU(\''+u.id+'\')">🗑️</button></td></tr>').join('');}
+async function addUser(){const n=prompt('Nama:'),e=prompt('Email:');if(!n||!e)return;try{await api('add_user',{name:n,email:e});rUsers();toast('✅ User dibuat (pass: Admin@123)');}catch(err){toast('❌ '+err.message);}}
+async function editU(id){const u=USERS.find(x=>x.id===id);const n=prompt('Nama:',u.name);if(n===null)return;await api('edit_user',{id,name:n});rUsers();}
+async function creditU(id){const v=parseInt(prompt('Tambah (+/-):'));if(isNaN(v))return;await api('update_credits',{id,delta:v});rUsers();rDash();toast('🪙 OK');}
+async function blockU(id){await api('set_blocked',{id});rUsers();}
+async function delU(id){if(!confirm('Hapus user+data?'))return;await api('delete_user',{id});rUsers();rDash();}
+
+let VIDS=[];
+async function rVideos(){const d=await api('list_videos');VIDS=d;const q=(document.getElementById('vSearch').value||'').toLowerCase(),f=document.getElementById('vFilter').value;
+document.getElementById('vT').innerHTML=d.filter(v=>(!f||v.status===f)&&(v.prompt+(v.profiles&&v.profiles.name||'')).toLowerCase().includes(q)).slice(0,120).map(v=>'<tr><td style="max-width:200px">'+(v.featured?'⭐ ':'')+esc(v.prompt.slice(0,60))+'</td><td>'+esc(v.profiles&&v.profiles.name||'?')+'</td><td>'+v.ratio+' '+v.duration+'s</td><td><span class="badge '+(v.status==='done'?'b-ok':v.status==='processing'?'b-pr':'b-no')+'">'+v.status+'</span></td>'+
+'<td><button class="act" onclick="featV(\''+v.id+'\')">'+(v.featured?'★':'☆')+'</button><button class="act" onclick="window.open(\''+v.url+'\')">🔗</button><button class="act dg" onclick="delV(\''+v.id+'\')">🗑️</button></td></tr>').join('');}
+async function featV(id){await api('feature_video',{id});rVideos();}
+async function delV(id){if(!confirm('Hapus?'))return;await api('delete_video',{id});rVideos();rDash();}
+
+async function rTx(){const f=document.getElementById('tFilter').value;const d=await api('list_tx');
+document.getElementById('tT').innerHTML=d.filter(t=>!f||t.status===f).map(t=>'<tr><td>'+esc(t.profiles&&t.profiles.name||'?')+'</td><td>+'+t.credits_added+'</td><td>Rp '+t.price.toLocaleString('id-ID')+'</td><td><span class="badge '+(t.status==='paid'?'b-ok':t.status==='pending'?'b-pr':'b-no')+'">'+t.status+'</span></td>'+
+'<td>'+(t.status==='pending'?'<button class="act ok" onclick="apTx(\''+t.id+'\')">✓</button><button class="act dg" onclick="rjTx(\''+t.id+'\')">✗</button>':'')+'</td></tr>').join('');}
+async function apTx(id){await api('approve_tx',{id});rTx();rDash();rUsers();toast('✅ Disetujui');}
+async function rjTx(id){await api('reject_tx',{id});rTx();rDash();}
+
+async function rTpl(){document.getElementById('tplT').innerHTML=Object.entries(S.templates||{}).map(([k,v])=>'<tr><td style="font-size:18px">'+v.icon+'</td><td>'+esc(v.name)+'</td><td>'+esc(v.desc)+'</td><td style="max-width:200px;font-size:10px;color:var(--tx3)">'+esc(v.prompt.slice(0,70))+'…</td><td><button class="act" onclick="editTpl(\''+k+'\')">✏️</button><button class="act dg" onclick="delTpl(\''+k+'\')">🗑️</button></td></tr>').join('');}
+async function addTpl(){const n=document.getElementById('tName').value.trim();if(!n)return;const t=S.templates||{};t[n.toLowerCase().replace(/\s/g,'')]={name:n,desc:document.getElementById('tDesc').value,icon:document.getElementById('tIcon').value||'🌟',color:document.getElementById('tColor').value||'#667eea,#764ba2',prompt:document.getElementById('tPrompt').value};await saveS({templates:t});rTpl();}
+async function editTpl(k){const p=prompt('Prompt:',S.templates[k].prompt);if(p===null)return;S.templates[k].prompt=p;await saveS({templates:S.templates});rTpl();}
+async function delTpl(k){if(!confirm('Hapus?'))return;delete S.templates[k];await saveS({templates:S.templates});rTpl();}
+
+async function rModels(){document.getElementById('mT').innerHTML=(S.models||[]).map((m,i)=>'<tr><td>'+esc(m)+'</td><td><button class="act dg" onclick="delModel('+i+')">🗑️</button></td></tr>').join('');}
+async function addModel(){const n=document.getElementById('mName').value.trim();if(!n)return;const ms=(S.models||[]).concat([n]);await saveS({models:ms});rModels();document.getElementById('mName').value='';}
+async function delModel(i){const ms=S.models.slice();if(ms.length<=1)return toast('⚠️ Min 1');ms.splice(i,1);await saveS({models:ms});rModels();}
+
+async function rAnn(){const d=await api('list_ann');document.getElementById('anT2').innerHTML=d.map(a=>'<tr><td>'+esc(a.title)+'</td><td><span class="badge '+(a.active?'b-ok':'b-no')+'">'+(a.active?'Aktif':'Off')+'</span></td><td><button class="act" onclick="togAnn(\''+a.id+'\','+a.active+')">🔄</button><button class="act dg" onclick="delAnn(\''+a.id+'\')">🗑️</button></td></tr>').join('');}
+async function addAnn(){const t=document.getElementById('anT').value.trim(),b=document.getElementById('anB').value.trim();if(!t||!b)return;await api('save_ann',{title:t,body:b,active:document.getElementById('anA').value==='1'});rAnn();document.getElementById('anT').value='';document.getElementById('anB').value='';}
+async function togAnn(id,cur){await api('toggle_ann',{id,active:!cur});rAnn();}
+async function delAnn(id){if(!confirm('Hapus?'))return;await api('delete_ann',{id});rAnn();}
+
+function rSet(){document.getElementById('sCost').value=S.cost;document.getElementById('sBonus').value=S.bonus;document.getElementById('sMaint').checked=S.maintenance;document.getElementById('sAuto').checked=S.autoApprove;
+document.getElementById('pkT').innerHTML=(S.topups||[]).map((t,i)=>'<tr><td>'+t.cr+'</td><td>'+(t.bonus||0)+'</td><td>Rp '+t.price.toLocaleString('id-ID')+'</td><td><button class="act dg" onclick="delPkg('+i+')">🗑️</button></td></tr>').join('');}
+async function saveS(patch){const merged=Object.assign({},S,patch);await api('save_settings',{value:merged});S=merged;}
+async function saveSet(){await saveS({cost:+document.getElementById('sCost').value,bonus:+document.getElementById('sBonus').value,maintenance:document.getElementById('sMaint').checked,autoApprove:document.getElementById('sAuto').checked});toast('💾 Disimpan');}
+async function addPkg(){const cr=+document.getElementById('pkCr').value,pr=+document.getElementById('pkPr').value,bo=+document.getElementById('pkBo').value||0;if(!cr||!pr)return;const tp=(S.topups||[]).concat([{cr,price:pr,bonus:bo}]);await saveS({topups:tp});rSet();['pkCr','pkPr','pkBo'].forEach(i=>document.getElementById(i).value='');}
+async function delPkg(i){const tp=S.topups.slice();tp.splice(i,1);await saveS({topups:tp});rSet();}
+
+async function exportAll(){const d=await api('export');const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='delai-backup.json';a.click();}
+async function importAll(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async ev=>{try{const o=JSON.parse(ev.target.result);if(!confirm('Import akan menimpa data. Lanjut?'))return;await api('import',{data:o});renderAll();toast('✅ Imported');}catch(err){toast('❌ '+err.message)}};r.readAsText(f);}
+async function wipe(){if(!confirm('⚠️ Hapus SEMUA?'))return;if(!confirm('Yakin?'))return;await api('wipe');renderAll();toast('🗑️ Reset');}
+
+window.addEventListener('DOMContentLoaded',async()=>{const{data:{session}}=await sb.auth.getSession();if(session){const{data:u}=await sb.auth.getUser();const role=(u.user.app_metadata&&u.user.app_metadata.role)||(u.user.user_metadata&&u.user.user_metadata.role);if(role==='admin'){token=session.access_token;await loadS();document.getElementById('gate').style.display='none';document.getElementById('adm').classList.add('show');renderAll();}}});
+</script></body></html>

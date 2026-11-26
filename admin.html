@@ -1,0 +1,20 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Generator Logo Del AI</title>
+<style>body{font-family:sans-serif;background:#0a0a0f;color:#f1f5f9;text-align:center;padding:30px}canvas{border-radius:24px;margin:20px auto;display:block;box-shadow:0 10px 40px rgba(255,107,53,.3)}button{padding:14px 28px;background:linear-gradient(135deg,#ff6b35,#8b5cf6);border:none;color:#fff;font-weight:700;border-radius:12px;font-size:16px;cursor:pointer}</style>
+</head><body><h2>Logo Del AI</h2><p>Klik download → simpan sebagai <b>logo.png</b> di folder proyekmu.</p>
+<canvas id="c" width="512" height="512"></canvas><br>
+<button onclick="dl()">⬇️ Download logo.png (512×512)</button>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');
+function draw(){x.clearRect(0,0,512,512);
+const g=x.createLinearGradient(0,0,512,512);g.addColorStop(0,'#ff6b35');g.addColorStop(1,'#8b5cf6');
+x.fillStyle=g;round(x,0,0,512,512,110);x.fill();
+x.fillStyle='#fff';round(x,150,150,212,150,16);x.fill();
+x.fillStyle='#0a0a0f';for(let i=0;i<5;i++){x.fillRect(160+i*42,160,26,150)}
+x.fillStyle='#fff';round(x,150,300,212,40,8);x.fill();
+x.fillStyle='#ff6b35';x.beginPath();x.moveTo(362,150);x.lineTo(362,200);x.lineTo(300,200);x.fill();
+x.font='800 70px -apple-system,Arial';x.textAlign='center';x.fillStyle='#fff';x.fillText('Del',256,400);
+x.fillStyle='#ffd9c2';x.fillText('AI',360,400);}
+function round(ctx,a,b,w,h,r){ctx.beginPath();ctx.moveTo(a+r,b);ctx.arcTo(a+w,b,a+w,b+h,r);ctx.arcTo(a+w,b+h,a,b+h,r);ctx.arcTo(a,b+h,a,b,r);ctx.arcTo(a,b,a+w,b,r);ctx.closePath();}
+draw();
+function dl(){const a=document.createElement('a');a.download='logo.png';a.href=c.toDataURL('image/png');a.click();}
+</script></body></html>
